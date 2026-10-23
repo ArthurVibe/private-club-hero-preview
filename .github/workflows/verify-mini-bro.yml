@@ -1,0 +1,55 @@
+name: Verify isolated Mini Bro experiment
+
+on:
+  push:
+    branches: [verify-mini-bro-public]
+
+permissions:
+  contents: read
+
+jobs:
+  chrome:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Wait for the exact experiment to be published
+        shell: python
+        run: |
+          import hashlib, time, urllib.request, urllib.error
+          from pathlib import Path
+          expected = hashlib.sha256(Path('mini-bro-icon/index.html').read_bytes()).digest()
+          deadline = time.monotonic() + 180
+          while time.monotonic() < deadline:
+              try:
+                  with urllib.request.urlopen('https://arthurvibe.github.io/private-club-hero-preview/mini-bro-icon/', timeout=10) as response:
+                      if response.status == 200 and hashlib.sha256(response.read()).digest() == expected:
+                          print('Published HTML matches the experiment source.')
+                          break
+              except (urllib.error.URLError, TimeoutError):
+                  pass
+              time.sleep(5)
+          else:
+              raise SystemExit('The exact published experiment did not become ready.')
+      - name: Install browser QA driver outside website source
+        run: npm install --prefix "$RUNNER_TEMP/mini-bro-qa" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+      - name: Verify viewport placement, Retina, controls and static behavior
+        env:
+          PRIVATE_CLUB_PLAYWRIGHT_MODULE: ${{ runner.temp }}/mini-bro-qa/node_modules/playwright
+          PRIVATE_CLUB_CHROMIUM_EXECUTABLE: /usr/bin/google-chrome
+          PRIVATE_CLUB_PREVIEW_URL: https://arthurvibe.github.io/private-club-hero-preview/mini-bro-icon/
+          MINI_BRO_BASELINE_FILE: ${{ github.workspace }}/index.html
+          MINI_BRO_SOURCE_FILE: ${{ github.workspace }}/mini-bro-icon/index.html
+          MINI_BRO_OUTPUT_DIR: ${{ runner.temp }}/mini-bro-results
+          MINI_BRO_REFERENCE_DIR: ${{ runner.temp }}/mini-bro-references
+        run: |
+          google-chrome --version
+          node .github/scripts/verify-mini-bro.cjs
+      - name: Retain experiment screenshots and checks
+        uses: actions/upload-artifact@v4
+        with:
+          name: mini-bro-public-verification
+          path: ${{ runner.temp }}/mini-bro-results
+          if-no-files-found: error
