@@ -1,0 +1,37 @@
+name: Verify public Hero preview in Chrome
+
+on:
+  push:
+    branches: [verify-public-preview]
+    paths:
+      - .github/scripts/verify-public-preview.cjs
+      - .github/workflows/verify-public-preview.yml
+
+permissions:
+  contents: read
+
+jobs:
+  chrome:
+    name: Chrome desktop and mobile interaction checks
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install QA driver outside website source
+        run: npm install --prefix "$RUNNER_TEMP/private-club-preview-qa" --ignore-scripts --no-audit --no-fund playwright@1.62.1
+      - name: Verify public HTTPS site, assets and interactions
+        env:
+          PRIVATE_CLUB_PLAYWRIGHT_MODULE: ${{ runner.temp }}/private-club-preview-qa/node_modules/playwright
+          PRIVATE_CLUB_CHROME_EXECUTABLE: /usr/bin/google-chrome
+          PRIVATE_CLUB_PREVIEW_URL: https://arthurvibe.github.io/private-club-hero-preview/
+        run: |
+          google-chrome --version
+          node .github/scripts/verify-public-preview.cjs
+      - name: Retain public browser verification report
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-preview-verification
+          path: public-preview-verification.json
+          if-no-files-found: error
