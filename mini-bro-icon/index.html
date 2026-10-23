@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="description" content="What’s Up, Bro? Your personal AI planner. Less Planning. More Living.">
+  <link rel="preload" href="assets/fonts/PlayfairDisplay-Variable.ttf" as="font" type="font/ttf" crossorigin>
+  <title>What’s Up, Bro? — The Private Club</title>
+  <style>
+    /* The approved geometry is unchanged; Stage 2 motion is isolated below. */
+    @font-face {
+      font-family: 'Playfair Display';
+      src: url('assets/fonts/PlayfairDisplay-Variable.ttf') format('truetype');
+      font-style: normal;
+      font-weight: 400 900;
+      font-display: swap;
+    }
+    :root {
+      --forest: #14221b;
+      --brass: #b99a69;
+      /* Bronze is scoped to buttons; the approved brand colours stay intact. */
+      --bronze: #825536;
+      --bronze-mid: #966443;
+      --bronze-highlight: #a8764d;
+      --bronze-light: #c49a6c;
+      --bronze-dark: #63452f;
+      --bronze-edge: #3e2a1d;
+      --bronze-border: #a8764d;
+      /* A warmer near-black lets the central bronze stay dark and readable. */
+      --bronze-ink: #15110d;
+      --bronze-surface: #a57350;
+      --bronze-hover-surface: #ac7954;
+      --bronze-hover-border: #c49a6c;
+      --metal-sheen: rgb(214 181 137 / .85);
+      --ivory: #e9dfcd;
+      --burgundy: #512b35;
+      --warm-text: #ddd0b9;
+      --display: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      --ui: system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+      --page-gutter: clamp(24px, 5.5vw, 144px);
+      --header-height: 112px;
+      --control-radius: 6px;
+      --scene-position: 40% 0%;
+      --control-height: 50px;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    html { background: var(--forest); }
+    body { margin: 0; color: var(--ivory); font: 16px/1.5 var(--ui); }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+    button, a { touch-action: manipulation; }
+    button:focus-visible, a:focus-visible {
+      outline: 2px solid var(--ivory);
+      outline-offset: 5px;
+    }
+    button::-moz-focus-inner { border: 0; }
+    [hidden] { display: none !important; }
+    h1, p { margin: 0; }
+    ::selection { color: var(--forest); background: var(--brass); }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+    .skip-link { position: fixed; top: 12px; left: 12px; z-index: 30; padding: 12px 20px; background: var(--ivory); color: var(--forest); }
+    .skip-link:not(:focus) { width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); }
+    .site-shell { position: relative; isolation: isolate; background: var(--forest); }
+
+    /* Header floats over the same continuous scene as the Hero. */
+    .site-header {
+      position: absolute; inset: 0 0 auto; z-index: 10;
+      background: linear-gradient(180deg, rgb(20 34 27 / .79), rgb(20 34 27 / .35) 75%, transparent);
+    }
+    .header-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 36px; min-height: var(--header-height); padding: 12px var(--page-gutter);
+    }
+    .brand { display: inline-flex; flex: 0 0 auto; flex-direction: column; align-items: flex-start; gap: 9px; }
+    .wordmark { display: grid; gap: 3px; font-family: var(--display); font-weight: 700; line-height: .85; }
+    .wordmark-top { display: block; font-size: 22.5px; letter-spacing: -.035em; }
+    .wordmark-bottom { display: block; font-size: 49px; letter-spacing: -.055em; }
+    .brand-tagline { font-size: 11px; line-height: 1.3; letter-spacing: .11em; color: var(--warm-text); white-space: nowrap; }
+    .header-controls { display: flex; flex: 1; justify-content: space-between; align-items: center; gap: clamp(28px, 3.5vw, 90px); }
+    .main-nav { display: flex; margin-inline: auto; align-items: center; gap: clamp(24px, 2.6vw, 64px); }
+    .nav-action { padding: 12px 0; min-height: 44px; border: 0; background: transparent; color: var(--ivory); font-size: 15px; white-space: nowrap; }
+    .button {
+      display: inline-flex; align-items: stretch; justify-content: center;
+      min-height: var(--control-height); padding: 0; border: 0;
+      border-radius: var(--control-radius); background: transparent; color: var(--bronze-ink);
+      appearance: none; overflow: visible;
+      font-size: 13px; line-height: 1.5; font-weight: 600; white-space: nowrap;
+    }
+    .button-face {
+      display: inline-flex; align-items: center; justify-content: center; gap: var(--face-gap, 22px);
+      flex: 1 1 auto; min-width: 0; min-height: var(--control-height); padding: 13px var(--face-padding, 24px);
+      border: 1px solid var(--bronze-border); border-radius: var(--control-radius);
+      position: relative; isolation: isolate; overflow: hidden; pointer-events: none;
+      color: inherit; background: var(--bronze-surface);
+      /* Dark edges frame a quiet centre; the label stays over the readable midtone. */
+      background-image: linear-gradient(180deg, var(--bronze-highlight), var(--bronze-mid) 14%,
+        transparent 30%, transparent 74%, var(--bronze) 90%, var(--bronze-dark));
+    }
+    .invitation { font-size: 12px; --face-padding: 20px; --face-gap: 20px; }
+    .invitation .button-face {
+      box-shadow: inset 0 1px 0 rgb(214 181 137 / .22), inset 0 -1px 0 var(--bronze-edge),
+        0 2px 0 var(--bronze-edge), 0 6px 12px rgb(0 0 0 / .25);
+    }
+    .button-outline { color: var(--ivory); font-weight: 500; }
+    .button-outline .button-face { background: rgb(20 34 27 / .42); }
+    .button:focus-visible { outline: none; }
+    .button:focus-visible .button-face { outline: 2px solid var(--ivory); outline-offset: 5px; }
+    .arrow { display: block; width: 18px; height: 18px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    .menu-toggle { display: none; align-items: center; justify-content: center; gap: 10px; min-width: 48px; min-height: 48px; padding: 10px 14px; background: rgb(20 34 27 / .55); border: 1px solid var(--brass); border-radius: var(--control-radius); color: var(--ivory); font-size: 12px; }
+    .menu-symbol { width: 20px; height: 16px; display: grid; align-content: space-between; }
+    .menu-symbol span { display: block; width: 100%; height: 1px; background: currentColor; }
+    .menu-toggle[aria-expanded="true"] .menu-symbol { display: none; }
+
+    /* Preserve the original image; only its responsive display is cropped. */
+    .hero {
+      display: flex; flex-direction: column; justify-content: center; position: relative;
+      min-height: 100vh; min-height: 100svh; isolation: isolate;
+      padding: calc(var(--header-height) + 76px) var(--page-gutter) 76px;
+      overflow: hidden;
+    }
+    .hero-scene { position: absolute; inset: 0; z-index: -2; margin: 0; }
+    .hero-scene picture { display: block; width: 100%; height: 100%; }
+    .hero-photo { display: block; width: 100%; height: 100%; object-fit: cover; object-position: var(--scene-position); }
+    .hero::before {
+      content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+      background: linear-gradient(90deg, rgb(20 34 27 / .38), rgb(20 34 27 / .12) 38%, transparent 57%);
+    }
+    .hero-content { width: min(49%, 800px); }
+    .hero-title {
+      font: 400 clamp(44px, 4.5vw, 76px)/1.07 var(--display);
+      letter-spacing: -.035em; color: var(--ivory);
+    }
+    .hero-title span { display: block; }
+    .hero-tagline { margin-top: 18px; font: 400 clamp(23px, 1.85vw, 30px)/1.4 var(--display); color: var(--brass); }
+    .hero-description { max-width: 46ch; margin-top: 16px; color: var(--warm-text); font-size: 16px; line-height: 1.65; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 24px; }
+    .hero-actions .button { min-width: 170px; }
+    .notice {
+      position: fixed; z-index: 20; right: var(--page-gutter); bottom: 24px;
+      display: flex; align-items: center; justify-content: space-between; gap: 28px;
+      min-width: 240px; max-width: calc(100% - 48px); padding: 12px 12px 12px 20px;
+      color: var(--ivory); background: var(--forest); border: 1px solid var(--brass);
+      border-radius: var(--control-radius); box-shadow: 0 12px 32px rgb(0 0 0 / .22);
+      font-size: 14px;
+    }
+    .notice-close { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; background: transparent; color: var(--ivory); font-size: 24px; }
+    @media (min-width: 1101px) and (max-height: 650px) {
+      .hero { min-height: 650px; padding-bottom: 60px; }
+    }
+
+    /* A disclosure menu avoids empty sections and stays usable on touch screens. */
+    @media (max-width: 1100px) {
+      :root { --page-gutter: 32px; --header-height: 104px; --scene-position: 68% 0%; }
+      .header-inner { gap: 24px; }
+      .menu-toggle { display: inline-flex; }
+      .header-controls {
+        position: absolute; top: calc(100% - 1px); left: var(--page-gutter); right: var(--page-gutter);
+        display: none; align-items: stretch; gap: 24px; flex-direction: column;
+        padding: 24px; border: 1px solid var(--brass); border-radius: var(--control-radius);
+        background: var(--forest);
+      }
+      .header-controls.is-open { display: flex; }
+      .main-nav { margin-inline: 0; align-items: stretch; gap: 8px; flex-direction: column; }
+      .nav-action { text-align: left; }
+      .invitation { align-self: flex-start; }
+      .hero-content { width: 53%; }
+      .hero-title { font-size: clamp(40px, 5vw, 55px); }
+      .hero-actions { gap: 12px; }
+    }
+    @media (max-width: 767px) {
+      :root { --page-gutter: 24px; --header-height: 104px; }
+      .site-header { background: var(--forest); }
+      .brand-tagline { font-size: 11px; letter-spacing: .085em; }
+      .wordmark-top { font-size: 19.3px; }
+      .wordmark-bottom { font-size: 42px; }
+      .brand { gap: 8px; }
+      .hero { min-height: 100vh; min-height: 100svh; padding: var(--header-height) 0 0; justify-content: flex-start; overflow: visible; }
+      .hero::before { display: none; }
+      .hero-content { order: 0; width: 100%; margin-top: 0; padding: 48px var(--page-gutter) 40px; }
+      .hero-title { font-size: clamp(38px, 9.8vw, 54px); line-height: 1.08; }
+      .hero-tagline { margin-top: 18px; font-size: 23px; }
+      .hero-actions { margin-top: 22px; gap: 12px; }
+      .hero-actions .button { min-width: 0; flex: 1 1 145px; --face-padding: 16px; --face-gap: 12px; }
+      .hero-scene { position: relative; inset: auto; order: 1; width: 100%; aspect-ratio: 1 / 1; z-index: 0; overflow: hidden; }
+      .hero-photo { object-position: 78% 50%; }
+      .notice { right: 16px; bottom: 16px; max-width: calc(100% - 32px); }
+    }
+    @media (max-width: 359px) {
+      :root { --page-gutter: 20px; }
+      .hero-title { font-size: 34px; }
+      .hero-actions { flex-direction: column; }
+      .hero-actions .button { flex: 0 0 auto; }
+      .menu-label { display: none; }
+    }
+    /* Stage 2: all decorative layers are out of flow and ignore pointer events. */
+    :root {
+      --motion-ease: cubic-bezier(.2, .65, .3, 1);
+      --button-float-duration: 400ms;
+    }
+    .button-meet, .invitation { --face-lift: -4px; }
+    .button-meet { --face-lift: -6px; --sheen-width: 75%; --sheen-strength: .95; }
+    .button-meet .button-face, .invitation .button-face { border-bottom-color: var(--bronze-edge); }
+    .button-meet .button-face {
+      box-shadow: inset 0 1px 0 rgb(214 181 137 / .3), inset 0 -1px 0 var(--bronze-edge),
+        0 3px 0 var(--bronze-edge), 0 8px 16px rgb(0 0 0 / .3);
+    }
+    .invitation { --sheen-width: 60%; --sheen-strength: .75; }
+    .button-meet .button-face::before, .invitation .button-face::before {
+      content: ''; position: absolute; top: -60%; bottom: -60%; left: 0; width: var(--sheen-width);
+      z-index: -1; pointer-events: none; opacity: 0;
+      background: linear-gradient(90deg, transparent, rgb(196 154 108 / .25) 20%,
+        var(--metal-sheen) 44%, var(--metal-sheen) 56%, rgb(196 154 108 / .25) 80%, transparent);
+      transform: translateX(-160%) skewX(-20deg);
+    }
+    .invitation .button-face::after {
+      content: ''; position: absolute; inset: 4px; pointer-events: none;
+      border: 1px solid rgb(74 53 35 / .5); border-radius: 3px; opacity: 0;
+    }
+    .nav-action { position: relative; }
+    .nav-action::after {
+      content: ''; position: absolute; left: 0; right: 0; bottom: 6px; height: 1px;
+      pointer-events: none; background: var(--brass); transform: scaleX(0); transform-origin: left;
+    }
+    .nav-action:focus-visible { color: var(--brass); }
+    .nav-action:focus-visible::after { transform: scaleX(1); }
+    .wordmark-bottom { position: relative; }
+    .wordmark-bottom::after {
+      content: attr(data-engraving); position: absolute; inset: 0; pointer-events: none;
+      color: transparent; opacity: 0;
+      background: linear-gradient(110deg, transparent 25%, rgb(150 100 67 / .7) 40%,
+        #fff3dc 50%, rgb(168 118 77 / .7) 60%, transparent 75%);
+      background-size: 200% 100%; background-position: 150% 0; background-repeat: no-repeat;
+      -webkit-background-clip: text; background-clip: text;
+    }
+    .hero::after {
+      content: ''; position: absolute; top: 0; bottom: 0; left: 0;
+      width: min(var(--warm-width, 0px), 100%); z-index: -1; pointer-events: none; opacity: 0;
+      background: radial-gradient(circle 360px at var(--warm-x, 0px) var(--warm-y, 0px),
+        rgb(220 156 79) 0%, rgb(220 156 79 / .65) 32%, transparent 100%);
+      -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 120px), transparent);
+      mask-image: linear-gradient(90deg, #000 calc(100% - 120px), transparent);
+    }
+    .hero[data-warm-welcome="off"]::after { display: none; }
+    @keyframes bronze-reflection {
+      0% { transform: translateX(-160%) skewX(-20deg); opacity: 0; }
+      12%, 85% { opacity: var(--sheen-strength); }
+      100% { transform: translateX(220%) skewX(-20deg); opacity: 0; }
+    }
+    @keyframes living-engraving {
+      0% { background-position: 150% 0; opacity: 0; }
+      20%, 80% { opacity: 1; }
+      100% { background-position: -50% 0; opacity: 0; }
+    }
+    @keyframes hero-reveal { from { opacity: 0; } to { opacity: 1; } }
+    /* The native control never moves. Static feedback also works with reduced motion. */
+    .button-meet:is([data-pointer-hover], :focus-visible) .button-face {
+      background-color: var(--bronze-hover-surface); border-color: var(--bronze-hover-border);
+      border-bottom-color: var(--bronze-edge); filter: brightness(1.13);
+      box-shadow: inset 0 1px 0 rgb(214 181 137 / .55), inset 0 -1px 0 var(--bronze-edge),
+        0 4px 0 var(--bronze-edge), 0 16px 28px rgb(0 0 0 / .38);
+    }
+    .invitation:is([data-pointer-hover], :focus-visible) .button-face {
+      background-color: var(--bronze-hover-surface); border-color: var(--bronze-hover-border);
+      border-bottom-color: var(--bronze-edge); filter: brightness(1.1);
+      box-shadow: inset 0 1px 0 rgb(214 181 137 / .4), inset 0 -1px 0 var(--bronze-edge),
+        0 4px 0 var(--bronze-edge), 0 12px 22px rgb(0 0 0 / .3);
+    }
+    .button-outline:is([data-pointer-hover], :focus-visible) .button-face {
+      border-color: var(--bronze-hover-border); background-color: rgb(81 58 39 / .78);
+      box-shadow: inset 0 0 0 1px rgb(196 154 108 / .25), 0 12px 24px rgb(0 0 0 / .34);
+    }
+    .invitation:is([data-pointer-hover], :focus-visible) .button-face::after { opacity: 1; }
+    .brand:focus-visible .wordmark-bottom {
+      text-decoration: underline; text-decoration-color: var(--brass);
+      text-decoration-thickness: 1px; text-underline-offset: 5px;
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .hero-content { animation: hero-reveal 550ms var(--motion-ease); }
+      .hero-content[data-intro-complete] { animation: none; }
+      .button-meet .button-face, .invitation .button-face {
+        transition: background-color 350ms var(--motion-ease), border-color 350ms var(--motion-ease),
+          filter var(--button-float-duration) var(--motion-ease),
+          transform var(--button-float-duration) var(--motion-ease), box-shadow var(--button-float-duration) var(--motion-ease);
+      }
+      .button-outline .button-face {
+        transition: border-color var(--button-float-duration) var(--motion-ease), background-color 300ms var(--motion-ease),
+          transform var(--button-float-duration) var(--motion-ease), box-shadow var(--button-float-duration) var(--motion-ease);
+      }
+      .invitation .button-face::after { transition: opacity 260ms var(--motion-ease); }
+      .brand[data-wave] .wordmark-bottom::after { animation: living-engraving 850ms ease-in-out 1 both; }
+    }
+    @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+      .button-meet .arrow { transition: transform 250ms var(--motion-ease); }
+      .button[data-pointer-hover][data-motion-ready] .button-face { transform: translateY(var(--face-lift, -4px)); }
+      .button-meet[data-wave] .button-face::before { animation: bronze-reflection 800ms ease-in-out 1 both; }
+      .invitation[data-wave] .button-face::before { animation: bronze-reflection 700ms ease-in-out 1 both; }
+      .button-meet[data-pointer-hover][data-motion-ready] .arrow { transform: translate(5px, -3px); }
+      .button-meet[data-pointer-hover][data-motion-ready]:active .button-face {
+        transform: translateY(-1px) scale(.99); filter: brightness(1.06); transition-duration: 120ms;
+      }
+      .button-outline .arrow { transition: transform 300ms var(--motion-ease); }
+      .button-outline[data-pointer-hover][data-motion-ready] .arrow { transform: translateX(4px); }
+      .invitation .arrow { transition: transform 260ms var(--motion-ease); }
+      .invitation[data-pointer-hover][data-motion-ready] .arrow { transform: translateX(3px); }
+      .nav-action { transition: color 220ms var(--motion-ease); }
+      .nav-action::after { transition: transform 220ms var(--motion-ease); }
+      .nav-action:hover { color: var(--brass); }
+      .nav-action:hover::after { transform: scaleX(1); }
+      .hero::after { transition: opacity 550ms var(--motion-ease); }
+      .hero[data-warm-active]::after { opacity: .12; transition-duration: 500ms; }
+    }
+    /* Press feedback changes only the edge/shadow; it never darkens the label background. */
+    .button-meet:is(:active, [data-touch-active]) .button-face,
+    .invitation:is(:active, [data-touch-active]) .button-face {
+      box-shadow: inset 0 2px 0 rgb(62 42 29 / .7), inset 0 -1px 0 rgb(214 181 137 / .3),
+        0 1px 0 var(--bronze-edge), 0 3px 6px rgb(0 0 0 / .22);
+    }
+    .button-outline:is(:active, [data-touch-active]) .button-face {
+      box-shadow: inset 0 0 0 1px rgb(196 154 108 / .4), 0 3px 8px rgb(0 0 0 / .22);
+    }
+    /* A dynamic system preference change also cancels effects already in progress. */
+    @media (prefers-reduced-motion: reduce) {
+      .button-face, .button-face::after, .button .arrow { transition: none; }
+    }
+    @media (prefers-reduced-motion: reduce), (hover: none), (pointer: coarse) {
+      .hero::after { opacity: 0 !important; transition: none !important; }
+    }
+
+    /* Static Mini Bro experiment. Absolute positioning stays inside the Hero;
+       the viewport cap keeps the icon visible when the mobile Hero is taller. */
+    .mini-bro {
+      --mini-bro-size: 64px;
+      --mini-bro-inset: 24px;
+      position: absolute; z-index: 1;
+      right: var(--mini-bro-inset);
+      top: min(calc(100% - var(--mini-bro-size) - var(--mini-bro-inset)),
+        calc(100vh - var(--mini-bro-size) - var(--mini-bro-inset)));
+      top: min(calc(100% - var(--mini-bro-size) - var(--mini-bro-inset)),
+        calc(100svh - var(--mini-bro-size) - var(--mini-bro-inset)));
+      display: block; width: var(--mini-bro-size); height: var(--mini-bro-size);
+      pointer-events: none; user-select: none;
+    }
+    .mini-bro img { display: block; width: 100%; height: 100%; object-fit: contain; }
+    @media (max-width: 767px) {
+      .mini-bro { --mini-bro-size: 48px; --mini-bro-inset: 16px; }
+    }
+
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#hero-title">Skip to content</a>
+  <div class="site-shell" id="top">
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="#top" aria-label="What’s Up, Bro? — Back to top">
+          <span class="wordmark" aria-hidden="true"><span class="wordmark-top">WHAT’S UP,</span><span class="wordmark-bottom" data-engraving="BRO?">BRO?</span></span>
+          <span class="brand-tagline">YOUR PERSONAL AI PLANNER</span>
+        </a>
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="header-controls" aria-label="Open menu">
+          <span class="menu-symbol" aria-hidden="true"><span></span><span></span><span></span></span><span class="menu-label">Menu</span>
+        </button>
+        <div class="header-controls" id="header-controls">
+          <nav class="main-nav" aria-label="Main navigation">
+            <button class="nav-action" type="button" data-coming-soon>About Bro</button>
+            <button class="nav-action" type="button" data-coming-soon>How It Works</button>
+            <button class="nav-action" type="button" data-coming-soon>Features</button>
+          </nav>
+          <button class="button invitation" type="button" data-coming-soon><span class="button-face">Get Early Access <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></button>
+        </div>
+      </div>
+    </header>
+    <main class="hero" id="hero" aria-labelledby="hero-title">
+      <figure class="hero-scene"><picture><source type="image/webp" srcset="assets/Whats_Up_Bro_Private_Club_Hero_2560x1440.webp"><img class="hero-photo" id="club-photo" src="assets/Whats_Up_Bro_Private_Club_Hero_2560x1440.png" width="2560" height="1440" alt="Bro Gentleman in a green hoodie and graphite jacket beside a burgundy Chesterfield sofa in a warmly lit private club." fetchpriority="high" decoding="async"></picture></figure>
+      <div class="hero-content">
+        <h1 class="hero-title" id="hero-title" tabindex="-1"><span>PLAN LIKE</span><span>A GENTLEMAN.</span></h1>
+        <p class="hero-tagline">Less Planning. More Living.</p>
+        <p class="hero-description">Your personal AI planner for tasks, plans, and the things you don't want to forget. Just tell Bro.</p>
+        <div class="hero-actions">
+          <button class="button button-meet" id="meet-bro" type="button" data-coming-soon><span class="button-face">Meet Bro <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M7 6h11v11"/></svg></span></button>
+          <button class="button button-outline" type="button" data-coming-soon><span class="button-face">How It Works <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></button>
+        </div>
+      </div>
+      <picture class="mini-bro" aria-hidden="true">
+        <source type="image/webp" srcset="assets/mini-bro/mini-bro-icon-v1.0-64.webp 64w, assets/mini-bro/mini-bro-icon-v1.0-128.webp 128w, assets/mini-bro/mini-bro-icon-v1.0-256.webp 256w" sizes="(max-width: 767px) 48px, 64px">
+        <img src="assets/mini-bro/mini-bro-icon-v1.0-64.png" srcset="assets/mini-bro/mini-bro-icon-v1.0-48.png 48w, assets/mini-bro/mini-bro-icon-v1.0-64.png 64w, assets/mini-bro/mini-bro-icon-v1.0-128.png 128w, assets/mini-bro/mini-bro-icon-v1.0-256.png 256w" sizes="(max-width: 767px) 48px, 64px" width="64" height="64" alt="" decoding="async" fetchpriority="low" draggable="false">
+      </picture>
+    </main>
+  </div>
+  <aside class="notice" id="coming-soon" aria-label="Preview notice" hidden>
+    <p id="notice-message" role="status" aria-live="polite"></p>
+    <button class="notice-close" id="notice-close" type="button" aria-label="Close notice">×</button>
+  </aside>
+  <script>
+    'use strict';
+    // Prototype controls and measured lighting: no registration, storage or API requests.
+    (() => {
+      const toggle = document.getElementById('menu-toggle');
+      const controls = document.getElementById('header-controls');
+      const mobile = window.matchMedia('(max-width: 1100px)');
+      const notice = document.getElementById('coming-soon');
+      let noticeTrigger = null;
+      const closeMenu = (restoreFocus = false) => {
+        controls.classList.remove('is-open');
+        toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute('aria-label', 'Open menu');
+        if (restoreFocus) toggle.focus();
+      };
+      const closeNotice = (restoreFocus = false) => {
+        notice.hidden = true;
+        document.getElementById('notice-message').textContent = '';
+        if (restoreFocus && noticeTrigger?.isConnected) noticeTrigger.focus();
+      };
+      toggle.addEventListener('click', () => {
+        const open = toggle.getAttribute('aria-expanded') !== 'true';
+        controls.classList.toggle('is-open', open);
+        toggle.setAttribute('aria-expanded', String(open));
+        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      });
+      document.querySelectorAll('[data-coming-soon]').forEach((button) => {
+        button.addEventListener('click', () => {
+          const fromMenu = mobile.matches && controls.contains(button);
+          if (fromMenu) closeMenu(true);
+          noticeTrigger = fromMenu ? toggle : button;
+          notice.hidden = false;
+          document.getElementById('notice-message').textContent = 'Coming soon';
+        });
+      });
+      document.getElementById('notice-close').addEventListener('click', () => closeNotice(true));
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        if (toggle.getAttribute('aria-expanded') === 'true') closeMenu(true);
+        else if (!notice.hidden) closeNotice(notice.contains(document.activeElement));
+      });
+      document.addEventListener('pointerdown', (event) => {
+        if (!controls.contains(event.target) && !toggle.contains(event.target)) closeMenu();
+      });
+      mobile.addEventListener('change', () => {
+        const focusInMenu = controls.contains(document.activeElement);
+        closeMenu(mobile.matches && focusInMenu);
+        if (!mobile.matches && document.activeElement === toggle) controls.querySelector('button').focus();
+      });
+      document.querySelector('.brand').addEventListener('click', () => closeMenu());
+      // A missing source is recorded for QA; never replace the approved photograph.
+      const photo = document.getElementById('club-photo');
+      const photoUnavailable = () => {
+        document.documentElement.dataset.heroAsset = 'missing';
+        photo.hidden = true;
+      };
+      // Measure in Hero coordinates; limit the lighting before the original figure.
+      const hero = document.getElementById('hero');
+      const meet = document.getElementById('meet-bro');
+      const fineHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+      const heroContent = document.querySelector('.hero-content');
+      const finishIntro = () => heroContent.setAttribute('data-intro-complete', '');
+      heroContent.addEventListener('animationend', (event) => {
+        if (event.target === heroContent && event.animationName === 'hero-reveal') finishIntro();
+      });
+      heroContent.addEventListener('focusin', finishIntro, { once: true });
+      reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) finishIntro(); });
+      if (reducedMotion.matches) finishIntro();
+      const warmEnabled = new URLSearchParams(window.location.search).get('warmWelcome') !== 'off';
+      hero.dataset.warmWelcome = warmEnabled ? 'on' : 'off';
+      const clearWarmWelcome = () => hero.removeAttribute('data-warm-active');
+      const measureWarmWelcome = () => {
+        if (!photo.naturalWidth || !photo.naturalHeight) return;
+        const area = hero.getBoundingClientRect();
+        const image = photo.getBoundingClientRect();
+        const button = meet.getBoundingClientRect();
+        const scale = Math.max(image.width / photo.naturalWidth, image.height / photo.naturalHeight);
+        const horizontalPosition = parseFloat(getComputedStyle(photo).objectPosition.split(' ')[0]) / 100;
+        const imageOffset = (image.width - photo.naturalWidth * scale) * horizontalPosition;
+        // The original figure starts at approximately 56% of the image width.
+        // End the layer 24px earlier, with a further 120px feathered fade inside it.
+        const figureLeft = image.left - area.left + imageOffset + photo.naturalWidth * .56 * scale;
+        const safeWidth = Math.max(0, Math.min(area.width, figureLeft - 24));
+        hero.style.setProperty('--warm-width', safeWidth + 'px');
+        hero.style.setProperty('--warm-x', button.left - area.left + button.width / 2 + 'px');
+        hero.style.setProperty('--warm-y', button.top - area.top + button.height / 2 + 'px');
+      };
+      meet.addEventListener('pointerenter', (event) => {
+        if (!warmEnabled || !fineHover.matches || reducedMotion.matches || event.pointerType === 'touch') return;
+        measureWarmWelcome();
+        hero.setAttribute('data-warm-active', '');
+      });
+      meet.addEventListener('pointerleave', clearWarmWelcome);
+      meet.addEventListener('pointercancel', clearWarmWelcome);
+      window.addEventListener('blur', clearWarmWelcome);
+      fineHover.addEventListener('change', clearWarmWelcome);
+      reducedMotion.addEventListener('change', clearWarmWelcome);
+      photo.addEventListener('load', measureWarmWelcome);
+      if ('ResizeObserver' in window) {
+        const observer = new ResizeObserver(measureWarmWelcome);
+        [hero, photo, meet].forEach((element) => observer.observe(element));
+      } else {
+        window.addEventListener('resize', measureWarmWelcome, { passive: true });
+      }
+      if (document.fonts) document.fonts.ready.then(measureWarmWelcome);
+      measureWarmWelcome();
+
+      // CSS alone cannot restart a hover wave while the logo keeps :focus-visible.
+      // Arm real pointer hover explicitly as well, so hybrid touch cannot leave sticky hover.
+      const feedbackControls = [...document.querySelectorAll('.button'), document.querySelector('.brand')];
+      let touchPress = null;
+      const clearWave = (control) => {
+        control.removeAttribute('data-wave');
+        control.removeAttribute('data-wave-origin');
+      };
+      const clearPointerFeedback = (control) => {
+        control.removeAttribute('data-pointer-hover');
+        control.removeAttribute('data-motion-ready');
+        if (control.dataset.waveOrigin === 'hover') clearWave(control);
+      };
+      const startWave = (control, origin) => {
+        if (reducedMotion.matches) return;
+        const logo = control.classList.contains('brand');
+        if (!logo && !control.matches('.button-meet, .invitation')) return;
+        clearWave(control);
+        const surface = control.querySelector(logo ? '.wordmark-bottom' : '.button-face');
+        // Commit the cancelled CSS animation before rearming, even within one rendering frame.
+        getComputedStyle(surface, logo ? '::after' : '::before').animationName;
+        control.dataset.waveOrigin = origin;
+        control.setAttribute('data-wave', '');
+      };
+      const releaseTouch = () => {
+        if (touchPress) touchPress.control.removeAttribute('data-touch-active');
+        touchPress = null;
+      };
+      const resetFeedback = () => {
+        releaseTouch();
+        feedbackControls.forEach((control) => { clearPointerFeedback(control); clearWave(control); });
+      };
+      feedbackControls.forEach((control) => {
+        const enter = (event) => {
+          if (event.pointerType === 'touch' || !fineHover.matches || control.hasAttribute('data-pointer-hover')) return;
+          control.setAttribute('data-pointer-hover', '');
+          if (!reducedMotion.matches) {
+            control.setAttribute('data-motion-ready', '');
+            startWave(control, 'hover');
+          }
+        };
+        control.addEventListener('pointerenter', enter);
+        control.addEventListener('pointermove', enter);
+        control.addEventListener('pointerleave', () => clearPointerFeedback(control));
+        control.addEventListener('pointercancel', () => { clearPointerFeedback(control); clearWave(control); });
+        if (control.classList.contains('brand')) {
+          control.addEventListener('focus', () => {
+            if (control.matches(':focus-visible') && !control.hasAttribute('data-pointer-hover')) startWave(control, 'focus');
+          });
+          control.addEventListener('blur', () => { if (control.dataset.waveOrigin === 'focus') clearWave(control); });
+        }
+      });
+      document.addEventListener('pointerdown', (event) => {
+        if (event.pointerType !== 'touch') return;
+        resetFeedback();
+        clearWarmWelcome();
+        const control = event.target.closest('.button');
+        if (control) {
+          touchPress = { control, pointerId: event.pointerId };
+          control.setAttribute('data-touch-active', '');
+        }
+      }, { passive: true });
+      const endTouch = (event) => { if (touchPress?.pointerId === event.pointerId) releaseTouch(); };
+      document.addEventListener('pointerup', endTouch, { passive: true });
+      document.addEventListener('pointercancel', endTouch, { passive: true });
+      window.addEventListener('blur', resetFeedback);
+      fineHover.addEventListener('change', resetFeedback);
+      reducedMotion.addEventListener('change', () => {
+        feedbackControls.forEach((control) => { clearWave(control); control.removeAttribute('data-motion-ready'); });
+        releaseTouch();
+      });
+
+      photo.addEventListener('error', photoUnavailable);
+      if (photo.complete && !photo.naturalWidth) photoUnavailable();
+    })();
+  </script>
+</body>
+</html>
