@@ -331,6 +331,178 @@
       .hero::after { opacity: 0 !important; transition: none !important; }
     }
 
+    /* Static Mini Bro experiment. Absolute positioning stays inside the Hero;
+       the viewport cap keeps the icon visible when the mobile Hero is taller. */
+    .mini-bro {
+      --mini-bro-size: 64px;
+      --mini-bro-inset: 24px;
+      position: absolute; z-index: 1;
+      left: var(--mini-bro-inset);
+      top: min(calc(100% - var(--mini-bro-size) - var(--mini-bro-inset)),
+        calc(100vh - var(--mini-bro-size) - var(--mini-bro-inset)));
+      top: min(calc(100% - var(--mini-bro-size) - var(--mini-bro-inset)),
+        calc(100svh - var(--mini-bro-size) - var(--mini-bro-inset)));
+      display: block; width: var(--mini-bro-size); height: var(--mini-bro-size);
+      pointer-events: none; user-select: none;
+    }
+    .mini-bro img { display: block; width: 100%; height: 100%; object-fit: contain; }
+    @media (max-width: 767px) {
+      .mini-bro { --mini-bro-size: 48px; --mini-bro-inset: 16px; }
+    }
+
+    /* Page 02 is isolated from the approved Hero styles and photo. */
+    .page-two {
+      position: relative; isolation: isolate; display: grid; place-items: center;
+      min-height: 100vh; min-height: 100svh; padding: 36px var(--page-gutter) 28px;
+      overflow: hidden; background: #122119;
+    }
+    .page-two:focus { outline: none; }
+    .page-two::before, .page-two::after { content: ''; position: absolute; inset: 0; pointer-events: none; }
+    .page-two::before { z-index: -2; background: url('https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/page-02/club_ambience_background.webp') center / cover no-repeat; opacity: .9; }
+    .page-two::after { z-index: -1; background: linear-gradient(180deg, rgb(10 22 16 / .42), rgb(11 23 17 / .74)); }
+    .page-two-inner { width: min(1100px, 100%); min-width: 0; }
+    .page-two-intro { text-align: center; margin-bottom: 22px; }
+    .page-two-eyebrow { color: var(--bronze-light); font-size: 12px; font-weight: 600; letter-spacing: .2em; }
+    .page-two-title { margin: 10px 0 6px; font: 400 clamp(38px, 3.6vw, 56px)/1.08 var(--display); letter-spacing: -.035em; }
+    .page-two-tagline { color: var(--ivory); font: 400 clamp(22px, 1.8vw, 27px)/1.4 var(--display); }
+    .page-two-description { max-width: 70ch; margin: 10px auto 0; color: var(--warm-text); font-size: 15px; line-height: 1.6; }
+    .page-two-carousel { width: min(100%, max(520px, calc((100svh - 370px) * 1.60768)), 1000px); margin-inline: auto; }
+    .page-two-track {
+      position: relative; display: flex; overflow-x: auto; overflow-y: hidden;
+      scroll-snap-type: x mandatory; overscroll-behavior-x: contain; scrollbar-width: none;
+      border: 1px solid rgb(196 154 108 / .48); border-radius: 12px;
+      background: rgb(10 18 14 / .65); box-shadow: 0 18px 48px rgb(0 0 0 / .3);
+    }
+    .page-two-track::-webkit-scrollbar { display: none; }
+    .page-two-track:focus-visible { outline: 2px solid var(--ivory); outline-offset: 5px; }
+    .page-two-slide {
+      flex: 0 0 100%; min-width: 0; margin: 0; padding: 4px; aspect-ratio: 1590 / 989;
+      display: grid; place-items: center; scroll-snap-align: start; scroll-snap-stop: always;
+    }
+    .page-two-slide img { display: block; width: 100%; height: 100%; object-fit: contain; }
+    .page-two-controls { display: grid; grid-template-columns: 48px 1fr auto 48px; align-items: center; gap: 16px; max-width: 430px; margin: 16px auto 0; }
+    .page-two-arrow {
+      display: grid; place-items: center; width: 48px; height: 48px; padding: 0;
+      color: var(--ivory); border: 1px solid var(--bronze-light); border-radius: 50%;
+      background: rgb(15 30 21 / .8); font-size: 28px; line-height: 1;
+    }
+    .page-two-arrow[aria-disabled="true"] { opacity: .4; cursor: default; }
+    .page-two-dots { display: flex; justify-content: center; }
+    .page-two-dot { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 6px; background: transparent; }
+    .page-two-dot::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #718073; }
+    .page-two-dot[aria-current="true"]::before { background: var(--bronze-light); box-shadow: 0 0 0 3px rgb(196 154 108 / .15); }
+    .page-two-count { color: var(--bronze-light); font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .page-two-summary { max-width: 70ch; min-height: 42px; margin: 8px auto 0; text-align: center; color: var(--warm-text); font-size: 14px; line-height: 1.5; }
+    @media (hover: hover) and (pointer: fine) {
+      .page-two-arrow:not([aria-disabled="true"]):hover { background: #293b2d; border-color: var(--ivory); }
+      .page-two-dot:hover::before { background: var(--ivory); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .page-two-arrow { transition: background-color 220ms ease, border-color 220ms ease; }
+      .page-two-dot::before { transition: background-color 180ms ease; }
+    }
+    @media (max-width: 767px) {
+      .page-two { padding: 36px 24px 28px; }
+      .page-two-eyebrow { font-size: 10px; letter-spacing: .14em; }
+      .page-two-title { font-size: clamp(37px, 9.5vw, 50px); }
+      .page-two-tagline { font-size: 23px; }
+      .page-two-description { font-size: 14px; }
+      .page-two-track { border-radius: 8px; }
+      .page-two-controls { grid-template-columns: 44px 1fr 44px; gap: 4px 8px; }
+      .page-two-arrow { width: 44px; height: 44px; }
+      .page-two-prev { grid-column: 1; grid-row: 1; }
+      .page-two-dots { grid-column: 2; grid-row: 1; }
+      .page-two-next { grid-column: 3; grid-row: 1; }
+      .page-two-count { grid-column: 2; grid-row: 2; text-align: center; }
+      .page-two-summary { min-height: 63px; font-size: 13px; }
+    }
+    @media (max-width: 359px) { .page-two-dot { width: 40px; } }
+
+    /* PAGE 03: Film premiere. Deliberately isolated from Hero and page 02 carousel. */
+    .page-three {
+      position: relative; isolation: isolate; min-height: 100vh; min-height: 100svh;
+      display: grid; align-items: center; padding: 68px var(--page-gutter) 76px;
+      background: #101d17; overflow: hidden;
+    }
+    .page-three::before {
+      content: ''; position: absolute; inset: 0; z-index: -2; pointer-events: none;
+      background: url('https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/page-02/club_ambience_background.webp') center / cover no-repeat;
+      opacity: .4;
+    }
+    .page-three::after {
+      content: ''; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+      background: linear-gradient(180deg, rgb(12 25 18 / .72), rgb(8 17 12 / .82) 55%, rgb(13 26 19 / .9));
+    }
+    .page-three-inner { width: min(1120px, 100%); margin-inline: auto; }
+    .page-three-intro { text-align: center; margin: 0 auto 26px; max-width: 850px; }
+    .page-three-eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .2em; color: var(--bronze-light); }
+    .page-three-title { margin: 10px auto 4px; font: 400 clamp(38px, 4vw, 62px)/1.1 var(--display); letter-spacing: -.035em; }
+    .page-three-tagline { font: 400 clamp(22px, 2vw, 29px)/1.35 var(--display); color: var(--brass); }
+    .page-three-description { margin: 12px auto 0; font-size: 15px; line-height: 1.6; color: var(--warm-text); }
+    .page-three-frame {
+      width: min(100%, 1000px); margin: 0 auto; position: relative; isolation: isolate;
+      aspect-ratio: 16 / 9; overflow: hidden; border-radius: 12px;
+      background: #0b1410; border: 1px solid rgb(196 154 108 / .58);
+      box-shadow: 0 28px 64px rgb(0 0 0 / .46), 0 0 0 5px rgb(185 154 105 / .06);
+    }
+    .page-three-video { display: block; width: 100%; height: 100%; border: 0; background: #070d09; }
+    .page-three-sound {
+      position: absolute; z-index: 2; right: 18px; bottom: 18px; padding: 12px 17px;
+      border: 1px solid var(--bronze-light); border-radius: 6px;
+      color: var(--ivory); background: rgb(14 31 21 / .93);
+      font-size: 13px; box-shadow: 0 8px 22px rgb(0 0 0 / .42);
+      cursor: pointer;
+    }
+    .page-three-sound:focus-visible { outline: 2px solid var(--ivory); outline-offset: 4px; }
+    @media (hover: hover) and (pointer: fine) { .page-three-sound:hover { background: #294332; } }
+    @media (max-width: 767px) { .page-three-sound { right: 9px; bottom: 9px; font-size: 11px; padding: 9px 11px; } }
+    .page-three-cover {
+      position: absolute; inset: 0; z-index: 1; display: grid; place-items: center;
+      background:
+        linear-gradient(90deg, rgb(11 20 14 / .25), rgb(10 18 13 / .18)),
+        url('assets/Whats_Up_Bro_Private_Club_Hero_2560x1440.webp') 62% center / cover no-repeat;
+    }
+    .page-three-frame[data-state="loading"] .page-three-cover,
+    .page-three-frame[data-state="playing"] .page-three-cover { display: none; }
+    .page-three-play {
+      display: flex; flex-direction: column; gap: 14px; align-items: center;
+      padding: 12px; border: 0; background: transparent; color: var(--ivory); cursor: pointer;
+    }
+    .page-three-play-icon {
+      display: grid; place-items: center; width: 84px; height: 84px;
+      border: 1px solid rgb(233 223 205 / .92); border-radius: 50%;
+      background: rgb(14 31 21 / .82);
+      box-shadow: 0 8px 26px rgb(0 0 0 / .4);
+    }
+    .page-three-play svg { width: 28px; height: 28px; transform: translateX(2px); fill: currentColor; }
+    .page-three-play-label { font: 400 20px/1.3 var(--display); letter-spacing: .01em; }
+    .page-three-play:focus-visible { outline: 2px solid var(--ivory); outline-offset: 6px; border-radius: 6px; }
+    .page-three-meta { margin-top: 14px; color: var(--warm-text); text-align: center; font-size: 13px; letter-spacing: .12em; }
+    .page-three-error {
+      margin: 16px auto 0; padding: 12px 16px; max-width: 1000px;
+      border: 1px solid var(--brass); border-radius: 6px; color: var(--ivory);
+      background: rgb(11 25 17 / .75); text-align: center; font-size: 14px;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .page-three-play:hover .page-three-play-icon { background: rgb(38 61 44 / .94); border-color: var(--bronze-light); }
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .page-three-play-icon { transition: background-color 180ms ease, border-color 180ms ease; }
+    }
+    @media (max-width: 767px) {
+      .page-three { min-height: auto; padding: 48px 24px 62px; }
+      .page-three-eyebrow { font-size: 10px; }
+      .page-three-title { font-size: clamp(36px, 9.1vw, 48px); }
+      .page-three-tagline { font-size: 23px; }
+      .page-three-description { font-size: 14px; }
+      .page-three-intro { margin-bottom: 22px; }
+      .page-three-frame { border-radius: 8px; }
+      .page-three-play-icon { width: 66px; height: 66px; }
+      .page-three-play svg { width: 23px; height: 23px; }
+      .page-three-play-label { font-size: 16px; }
+      .page-three-meta { font-size: 11px; letter-spacing: .08em; }
+    }
+
   </style>
 </head>
 <body>
@@ -348,14 +520,15 @@
         <div class="header-controls" id="header-controls">
           <nav class="main-nav" aria-label="Main navigation">
             <button class="nav-action" type="button" data-coming-soon>About Bro</button>
-            <button class="nav-action" type="button" data-coming-soon>How It Works</button>
+            <a class="nav-action" href="#how-it-works" data-section-link>How It Works</a>
             <button class="nav-action" type="button" data-coming-soon>Features</button>
           </nav>
           <button class="button invitation" type="button" data-coming-soon><span class="button-face">Get Early Access <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></button>
         </div>
       </div>
     </header>
-    <main class="hero" id="hero" aria-labelledby="hero-title">
+    <main>
+    <section class="hero" id="hero" aria-labelledby="hero-title">
       <figure class="hero-scene"><picture><source type="image/webp" srcset="assets/Whats_Up_Bro_Private_Club_Hero_2560x1440.webp"><img class="hero-photo" id="club-photo" src="assets/Whats_Up_Bro_Private_Club_Hero_2560x1440.png" width="2560" height="1440" alt="Bro Gentleman in a green hoodie and graphite jacket beside a burgundy Chesterfield sofa in a warmly lit private club." fetchpriority="high" decoding="async"></picture></figure>
       <div class="hero-content">
         <h1 class="hero-title" id="hero-title" tabindex="-1"><span>PLAN LIKE</span><span>A GENTLEMAN.</span></h1>
@@ -363,9 +536,79 @@
         <p class="hero-description">Your personal AI planner for tasks, plans, and the things you don't want to forget. Just tell Bro.</p>
         <div class="hero-actions">
           <button class="button button-meet" id="meet-bro" type="button" data-coming-soon><span class="button-face">Meet Bro <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M7 6h11v11"/></svg></span></button>
-          <button class="button button-outline" type="button" data-coming-soon><span class="button-face">How It Works <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></button>
+          <a class="button button-outline" href="#how-it-works" data-section-link><span class="button-face">How It Works <svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></span></a>
         </div>
       </div>
+      <picture class="mini-bro" aria-hidden="true">
+        <source type="image/webp" srcset="https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/mini-bro/mini-bro-icon-v1.0-64.webp 64w, https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/mini-bro/mini-bro-icon-v1.0-128.webp 128w, https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/mini-bro/mini-bro-icon-v1.0-256.webp 256w" sizes="(max-width: 767px) 48px, 64px">
+        <img src="https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/mini-bro/mini-bro-icon-v1.0-64.png" srcset="https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/mini-bro/mini-bro-icon-v1.0-48.png 48w, https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/mini-bro/mini-bro-icon-v1.0-64.png 64w, https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/mini-bro/mini-bro-icon-v1.0-128.png 128w, https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/mini-bro/mini-bro-icon-v1.0-256.png 256w" sizes="(max-width: 767px) 48px, 64px" width="64" height="64" alt="" decoding="async" fetchpriority="low" draggable="false">
+      </picture>
+    </section>
+    <section class="page-two" id="how-it-works" aria-labelledby="page-two-title" tabindex="-1">
+      <div class="page-two-inner">
+        <header class="page-two-intro">
+          <p class="page-two-eyebrow">THE PRIVATE CLUB / 02</p>
+          <h2 class="page-two-title" id="page-two-title">JUST TELL BRO.</h2>
+          <p class="page-two-tagline">Your plans. One conversation.</p>
+          <p class="page-two-description">Tell Bro what's on your mind. He helps turn it into an organized day.</p>
+        </header>
+        <div class="page-two-carousel" role="group" aria-roledescription="carousel" aria-label="Four planner capabilities">
+          <div class="page-two-track" id="bro-slides" role="group" tabindex="0" aria-label="Planner illustrations. Use Left and Right arrow keys to browse." aria-keyshortcuts="ArrowLeft ArrowRight Home End">
+            <figure class="page-two-slide" role="group" aria-roledescription="slide" aria-label="1 of 4: Tasks and reminders">
+              <img src="https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/page-02/01_tasks_reminders.webp" width="1590" height="989" loading="lazy" decoding="async" alt="Never miss what matters. Bro turns a request into two tasks: call Alex tomorrow at 10 AM and prepare a presentation.">
+            </figure>
+            <figure class="page-two-slide" role="group" aria-roledescription="slide" aria-label="2 of 4: Daily timeline">
+              <img src="https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/page-02/02_day_timeline.webp" width="1024" height="637" loading="lazy" decoding="async" alt="Bro presents a daily timeline, with workouts, meetings, meals and evening plans organized by time.">
+            </figure>
+            <figure class="page-two-slide" role="group" aria-roledescription="slide" aria-label="3 of 4: Thoughts and notes">
+              <img src="https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/page-02/03_bro_thoughts.webp" width="1024" height="637" loading="lazy" decoding="async" alt="Bro writes in a notebook beside Bro Thoughts, a board of saved ideas and notes.">
+            </figure>
+            <figure class="page-two-slide" role="group" aria-roledescription="slide" aria-label="4 of 4: Rescheduling">
+              <img src="https://raw.githubusercontent.com/ArthurVibe/moy-pervyy-proekt-planirovshchik-sait/feature/private-club-page-3-video/assets/page-02/04_reschedule.webp" width="1024" height="641" loading="lazy" decoding="async" alt="Bro relaxes after moving an existing meeting from today to tomorrow, without creating a duplicate.">
+            </figure>
+          </div>
+          <div class="page-two-controls" role="group" aria-label="Carousel navigation" hidden>
+            <button class="page-two-arrow page-two-prev" type="button" aria-label="Previous slide" aria-controls="bro-slides" aria-disabled="true"><span aria-hidden="true">‹</span></button>
+            <div class="page-two-dots" role="group" aria-label="Select slide">
+              <button class="page-two-dot" type="button" aria-label="Go to slide 1: Tasks and reminders" aria-controls="bro-slides" aria-current="true"></button>
+              <button class="page-two-dot" type="button" aria-label="Go to slide 2: Daily timeline" aria-controls="bro-slides" aria-current="false"></button>
+              <button class="page-two-dot" type="button" aria-label="Go to slide 3: Thoughts and notes" aria-controls="bro-slides" aria-current="false"></button>
+              <button class="page-two-dot" type="button" aria-label="Go to slide 4: Rescheduling" aria-controls="bro-slides" aria-current="false"></button>
+            </div>
+            <span class="page-two-count" aria-hidden="true">01 / 04</span>
+            <button class="page-two-arrow page-two-next" type="button" aria-label="Next slide" aria-controls="bro-slides" aria-disabled="false"><span aria-hidden="true">›</span></button>
+          </div>
+          <p class="page-two-summary" aria-live="polite" aria-atomic="true"><span class="sr-only" id="page-two-slide-status">Slide 1 of 4. </span><span id="page-two-summary-text">Create tasks from one natural-language message — without extra forms.</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="page-three" id="watch-bro-in-action" aria-labelledby="page-three-title">
+      <div class="page-three-inner">
+        <header class="page-three-intro">
+          <p class="page-three-eyebrow">THE PRIVATE CLUB / 03</p>
+          <h2 class="page-three-title" id="page-three-title">WATCH BRO IN ACTION.</h2>
+          <p class="page-three-tagline">Your Day. Your Rules.</p>
+          <p class="page-three-description">Thirty seconds. One conversation. Everything under control.</p>
+        </header>
+        <div class="page-three-frame" id="bro-film-frame" data-state="poster">
+          <iframe class="page-three-video" id="bro-film" title="WHAT'S UP, BRO? — Just Tell Bro. 30-second film." width="1280" height="720"
+            loading="lazy" referrerpolicy="strict-origin-when-cross-origin"
+            allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer; clipboard-write; screen-wake-lock"
+            allowfullscreen></iframe>
+          <div class="page-three-cover" id="bro-film-cover">
+            <button type="button" class="page-three-play" id="bro-film-play" aria-label="Play the 30-second film with sound">
+              <span class="page-three-play-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.8c0-.8.9-1.3 1.6-.9l12 7.2c.7.4.7 1.4 0 1.8l-12 7.2c-.7.4-1.6-.1-1.6-.9V4.8Z"/></svg></span>
+              <span class="page-three-play-label">Play with sound</span>
+            </button>
+          </div>
+          <button class="page-three-sound" type="button" id="bro-film-sound" hidden>♫ Turn on music</button>
+        </div>
+        <p class="page-three-error" id="bro-film-error" role="alert" hidden>The film could not load. Open it on Kinescope or try again.</p>
+        <p class="page-three-meta">JUST TELL BRO. &nbsp;·&nbsp; 30 SEC &nbsp;·&nbsp; SOUND ON WHEN ALLOWED</p>
+      </div>
+    </section>
+
     </main>
   </div>
   <aside class="notice" id="coming-soon" aria-label="Preview notice" hidden>
@@ -554,6 +797,193 @@
 
       photo.addEventListener('error', photoUnavailable);
       if (photo.complete && !photo.naturalWidth) photoUnavailable();
+    })();
+  </script>
+  <script>
+    // Native scrolling supplies touch gestures; controls add explicit navigation.
+    (() => {
+      const section = document.getElementById('how-it-works');
+      const carousel = section.querySelector('.page-two-carousel');
+      const track = section.querySelector('.page-two-track');
+      const slides = [...track.querySelectorAll('.page-two-slide')];
+      const dots = [...section.querySelectorAll('.page-two-dot')];
+      const previous = section.querySelector('.page-two-prev');
+      const next = section.querySelector('.page-two-next');
+      const count = section.querySelector('.page-two-count');
+      const status = document.getElementById('page-two-slide-status');
+      const summary = document.getElementById('page-two-summary-text');
+      const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+      const captions = [
+        'Create tasks from one natural-language message — without extra forms.',
+        'See your tasks in a clear timeline, ordered by time.',
+        'Keep ideas and notes in Bro Thoughts without assigning unnecessary deadlines.',
+        'Move an existing task to another day or time without duplicating it.'
+      ];
+      let index = 0, destination = null, settleTimer;
+      const clamp = value => Math.max(0, Math.min(slides.length - 1, value));
+      const offset = value => slides[value].offsetLeft - slides[0].offsetLeft;
+      const nearest = () => slides.reduce((best, slide, candidate) =>
+        Math.abs(offset(candidate) - track.scrollLeft) < Math.abs(offset(best) - track.scrollLeft) ? candidate : best, 0);
+      const publish = value => {
+        index = value;
+        slides.forEach((slide, current) => slide.setAttribute('aria-hidden', String(current !== index)));
+        dots.forEach((dot, current) => dot.setAttribute('aria-current', String(current === index)));
+        previous.setAttribute('aria-disabled', String(index === 0));
+        next.setAttribute('aria-disabled', String(index === slides.length - 1));
+        count.textContent = `${String(index + 1).padStart(2, '0')} / 04`;
+        if (summary.textContent !== captions[index]) {
+          status.textContent = `Slide ${index + 1} of 4. `;
+          summary.textContent = captions[index];
+        }
+      };
+      const settle = () => {
+        clearTimeout(settleTimer);
+        destination = null;
+        publish(nearest());
+      };
+      const move = value => {
+        destination = clamp(value);
+        const left = offset(destination);
+        if (Math.abs(track.scrollLeft - left) < 1) { settle(); return; }
+        track.scrollTo({ left, behavior: reduced.matches ? 'instant' : 'smooth' });
+        if (reduced.matches) settle();
+      };
+      previous.addEventListener('click', () => move((destination ?? index) - 1));
+      next.addEventListener('click', () => move((destination ?? index) + 1));
+      dots.forEach((dot, current) => dot.addEventListener('click', () => move(current)));
+      carousel.addEventListener('keydown', event => {
+        const current = destination ?? index;
+        const target = { ArrowLeft: current - 1, ArrowRight: current + 1, Home: 0, End: slides.length - 1 }[event.key];
+        if (target === undefined) return;
+        event.preventDefault();
+        move(target);
+      });
+      track.addEventListener('scroll', () => {
+        clearTimeout(settleTimer);
+        settleTimer = setTimeout(settle, 140);
+      }, { passive: true });
+      track.addEventListener('scrollend', settle);
+      const align = () => {
+        const current = destination ?? index;
+        track.scrollTo({ left: offset(current), behavior: 'instant' });
+        destination = null;
+        publish(current);
+      };
+      if ('ResizeObserver' in window) new ResizeObserver(align).observe(track);
+      else addEventListener('resize', align, { passive: true });
+      reduced.addEventListener('change', () => { if (reduced.matches) align(); });
+      publish(0);
+      section.querySelector('.page-two-controls').hidden = false;
+
+      // Keep the existing mobile-menu and notice handlers as the source of truth.
+      document.querySelectorAll('[data-section-link]').forEach(link => link.addEventListener('click', event => {
+        if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        const menu = document.getElementById('menu-toggle');
+        if (menu.getAttribute('aria-expanded') === 'true') menu.click();
+        if (!document.getElementById('coming-soon').hidden) document.getElementById('notice-close').click();
+        if (location.hash !== link.hash) history.pushState(null, '', link.hash);
+        section.focus({ preventScroll: true });
+        section.scrollIntoView({ block: 'start', behavior: reduced.matches ? 'instant' : 'smooth' });
+      }));
+    })();
+  </script>
+
+  <script>
+    // Page 03: lazy-load Kinescope once the visitor reaches the third screen.
+    // Attempt sound-on autoplay; browser policy may force the player to mute.
+    (() => {
+      const frame = document.getElementById('bro-film-frame');
+      const iframe = document.getElementById('bro-film');
+      const play = document.getElementById('bro-film-play');
+      const cover = document.getElementById('bro-film-cover');
+      const sound = document.getElementById('bro-film-sound');
+      const error = document.getElementById('bro-film-error');
+      const videoId = 'raYVAmYtNggSsbwc1GjJPn';
+      const embedUrl = 'https://kinescope.io/embed/' + videoId
+        + '?autoplay=1&muted=0&playsinline=1&loop=0&enableIframeApi';
+      let started = false;
+      let player = null;
+      let userWantsSound = false;
+      let observer = null;
+
+      const refreshSoundStatus = () => {
+        if (!player || !started) return;
+        player.isMuted().then((muted) => {
+          sound.hidden = !muted;
+        }).catch(() => { /* Native player volume control remains available. */ });
+      };
+      const connectAPI = () => {
+        if (document.getElementById('kinescope-iframe-api')) return;
+        window.onKinescopeIframeAPIReady = (factory) => {
+          factory.on(factory.Events.Created, ({ data: created }) => {
+            player = created;
+            // Leave source mix intact; this is a quiet initial listening level.
+            Promise.resolve(player.setVolume(0.25)).catch(() => {});
+            player.once(player.Events.Loaded, () => {
+              Promise.resolve(player.setVolume(0.25)).catch(() => {});
+              if (userWantsSound) {
+                Promise.resolve(player.unmute()).then(() => player.play()).catch(() => {});
+              }
+              setTimeout(refreshSoundStatus, 900);
+            });
+            player.on(player.Events.Playing, () => {
+              frame.dataset.state = 'playing';
+              setTimeout(refreshSoundStatus, 400);
+            });
+          });
+        };
+        const tag = document.createElement('script');
+        tag.id = 'kinescope-iframe-api';
+        tag.src = 'https://player.kinescope.io/latest/iframe.player.js?auto';
+        tag.async = true;
+        document.head.appendChild(tag);
+      };
+      const startFilm = (withSound = false) => {
+        if (withSound) userWantsSound = true;
+        if (started) {
+          if (withSound && player) {
+            Promise.resolve(player.setVolume(0.25))
+              .then(() => player.unmute())
+              .then(() => player.play())
+              .then(() => { sound.hidden = true; })
+              .catch(() => { sound.hidden = false; });
+          }
+          return;
+        }
+        started = true;
+        error.hidden = true;
+        frame.dataset.state = 'loading';
+        cover.hidden = true;
+        // Assign iframe URL only on actual view/click; no video fetch on Hero.
+        iframe.src = embedUrl;
+        connectAPI();
+      };
+
+      iframe.addEventListener('load', () => {
+        frame.dataset.state = 'playing';
+      });
+      play.addEventListener('click', () => startFilm(true));
+      sound.addEventListener('click', () => startFilm(true));
+
+      // The film starts on arrival at screen 03, with audio if the browser allows.
+      if ('IntersectionObserver' in window) {
+        observer = new IntersectionObserver(entries => {
+          if (entries.some(entry => entry.isIntersecting && entry.intersectionRatio >= 0.4)) {
+            startFilm(false);
+            observer.disconnect();
+          }
+        }, { threshold: [0, 0.4, 0.6] });
+        observer.observe(frame);
+      } else {
+        // No autoplay until the viewer clicks on browsers without observation support.
+        frame.dataset.state = 'poster';
+      }
+      iframe.addEventListener('error', () => {
+        frame.dataset.state = 'poster';
+        error.hidden = false;
+        cover.hidden = false;
+      });
     })();
   </script>
 </body>
